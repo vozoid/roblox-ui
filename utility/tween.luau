@@ -1,0 +1,192 @@
+local render = game:GetService("RunService").RenderStepped
+
+-- math
+local sqrt, sin, pi, halfpi, tau = math.sqrt, math.sin, math.pi, math.pi / 2, math.pi * 2
+
+-- constants
+local s = 1.70158
+
+local p = 0.3
+
+local b1 = 2.625 / 2.75
+local b2 = 2.25 / 2.75
+local b3 = 1.5 / 2.75
+
+local e1 = 1 / p
+
+-- styles
+local styles = {
+    linear = function(delta)
+            return delta
+    end,
+
+    sine = function(delta)
+            return sin(halfpi * delta - halfpi) + 1
+    end,
+
+    back = function(delta)
+            return delta^2 * (delta * (s + 1) - s)
+    end,
+
+    quad =  function(delta)
+            return delta^2
+    end,
+
+    quart = function(delta)
+            return delta^4
+    end,
+
+    quint = function(delta)
+        return delta^5
+    end,
+
+    bounce = {
+        {0, 0.25 / 2.75, 0.75 / 2.75, 1.75 / 2.75, 1},
+        
+        function(delta)
+            return -7.5625 * (1 - delta - b1)^2 + 0.015625
+        end,
+
+        function(delta)
+            return -7.5625 * (1 - delta - b2)^2 + 0.0625
+        end,
+
+        function(delta)
+            return -7.5625 * (1 - delta - b3)^2 + 0.25
+        end,
+
+        function(delta)
+            return 1 - 7.5625 * (1 - delta)^2
+        end
+    },
+
+    elastic = function(delta)
+        return -2^(10 * (delta - 1)) * sin(tau * (delta - 1 - p * 0.25) * e1)
+    end,
+    
+    exponential = function(delta)
+        return 2^(10 * delta - 10) - 0.001
+    end,
+
+    circular = function(delta)
+        return -sqrt(1 - delta^2) + 1
+    end,
+
+    cubic = function(delta)
+        return delta^3
+    end,
+}
+
+local tween = {}
+tween.__index = tween
+
+function tween:create(object, info, properties)
+    return setmetatable({
+        object = object,
+
+        time = info.time or info[1],
+        style = info.style or info[2] or "quad",
+        direction = info.direction or info[3] or "out",
+
+        properties = properties,
+
+        elapsed = 0
+    }, self)
+end
+
+function tween:play()
+    if typeof(styles[self.style]) == "table" then
+        self.in_current = 2
+        self.out_current = #styles[self.style][1] - 1
+    end
+
+    local starts = {}
+
+    for property, _ in self.properties do
+        starts[property] = self.object[property]
+    end
+
+    task.spawn(function()
+        while self.elapsed <= self.time and not self.cancelled do
+            if self.paused then continue end
+            self.delta = self.elapsed / self.time
+
+            -- in, in_out and out conversion
+            local alpha; do
+                if typeof(styles[self.style]) == "table" then -- for bounce and other things that might need stages
+                    if self.direction == "in" then
+                        if self.delta >  styles[self.style][1][self.in_current] then
+                            self.in_current += 1
+                        end
+                
+                        alpha = styles[self.style][self.in_current](self.delta)
+                    elseif self.direction == "in_out" then
+                        if self.delta <= 0.5 and self.delta > styles[self.style][1][self.in_current] / 2 then
+                            self.in_current += 1
+                        end
+                
+                        if self.delta > 0.5 and self.delta > 1 - styles[self.style][1][self.out_current] / 2 then
+                            self.out_current -= 1
+                        end
+                
+                        if self.delta <= 0.5 then
+                            alpha = 0.5 * styles[self.style][self.in_current](2 * self.delta)
+                        else
+                            alpha = 0.5 * (1 - styles[self.style][self.out_current + 1](-2 * self.delta + 2)) + 0.5
+                        end
+                    else
+                        if self.delta > 1 - styles[self.style][1][self.out_current] then
+                            self.out_current -= 1
+                        end
+                
+                        alpha = 1 - styles[self.style][self.out_current + 1](-self.delta + 1)
+                    end
+                else  -- for normal styles
+                    if self.direction == "in" then
+                        alpha = styles[self.style](self.delta)
+                    elseif self.direction == "in_out" then
+                        if self.delta <= 0.5 then
+                            alpha = 0.5 * styles[self.style](2 * self.delta)
+                        else
+                            alpha = 0.5 * (1 - styles[self.style](-2 * self.delta + 2)) + 0.5
+                        end
+                    else
+                        alpha = 1 - styles[self.style](-self.delta + 1)
+                    end
+                end
+            end
+
+            for property, value in self.properties do
+                if typeof(v1) == "number" then
+                    self.object[property] = starts[property] + ((value - starts[property]) * alpha)
+                else 
+                    self.object[property] = starts[property]:lerp(value, alpha)
+                end
+            end
+
+            self.elapsed += render:Wait()
+        end
+
+        if self.callback and not self.cancelled then
+            self.callback()
+        end
+    end)
+end
+
+function tween:pause()
+    self.paused = true
+end
+
+function tween:resume()
+    self.paused = false
+end
+
+function tween:cancel()
+    self.cancelled = true
+end
+
+function tween:wait()
+    repeat render:Wait() until self.elapsed >= self.time
+end
+
+return tween
