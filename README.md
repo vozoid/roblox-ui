@@ -1,2 +1,1 @@
-ui library things
-utility for drawing library
+ui library things and utility for exploits' drawing libraries
