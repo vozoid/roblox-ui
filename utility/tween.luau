@@ -80,11 +80,13 @@ function tween:play(reverse)
             end
         end
 
-        for property, value in self.properties do
-            if typeof(value) == "number" then
-                self.object[property] = self.starts[property] + ((value - self.starts[property]) * if reverse then 0 else 1)
-            else 
-                self.object[property] = self.starts[property]:lerp(value, if reverse then 0 else 1)
+        if not self.cancelled and not self.reversed then
+            for property, value in self.properties do
+                if typeof(value) == "number" then
+                    self.object[property] = self.starts[property] + ((value - self.starts[property]) * if reverse then 0 else 1)
+                else 
+                    self.object[property] = self.starts[property]:lerp(value, if reverse then 0 else 1)
+                end
             end
         end
 
