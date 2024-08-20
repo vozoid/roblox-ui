@@ -80,7 +80,7 @@ function tween:play(reverse)
             end
         end
 
-        if not self.cancelled and not self.reversed then
+        if not self.cancelled and (if reversed then true else not self.reversed) then
             for property, value in self.properties do
                 if typeof(value) == "number" then
                     self.object[property] = self.starts[property] + ((value - self.starts[property]) * if reverse then 0 else 1)
