@@ -1,3 +1,5 @@
+--!strict
+
 local heartbeat = game:GetService("RunService").Heartbeat
 
 -- math
@@ -26,7 +28,7 @@ local styles = {
 local tween = {}
 tween.__index = tween
 
-function tween:create(object, info, properties)
+function tween:create(object: any, info: { [string | number] : string }?, properties: { [string]: any }): tween
     return setmetatable({
         object = object,
 
@@ -41,8 +43,10 @@ function tween:create(object, info, properties)
     }, self)
 end
 
-function tween:play(reverse)
-    if reverse then
+export type tween = typeof(tween:create({}, {}, {}))
+
+function tween:play(_REVERSE: boolean?): ()
+    if _REVERSE then
         self.reversed = true
     else
         for property, value in self.properties do
@@ -51,9 +55,9 @@ function tween:play(reverse)
     end
 
     coroutine.wrap(function()
-        while (if reverse then self.elapsed >= 0 else self.elapsed <= self.time) and not self.cancelled and (if reverse then true else not self.reversed) do
+        while (if _REVERSE then self.elapsed >= 0 else self.elapsed <= self.time) and not self.cancelled and (if _REVERSE then true else not self.reversed) do
             if self.paused then heartbeat:Wait() continue end
-            self.elapsed += if reverse then -heartbeat:Wait() else heartbeat:Wait()
+            self.elapsed += if _REVERSE then -heartbeat:Wait() else heartbeat:Wait()
 
             self.delta = self.elapsed / self.time
 
@@ -71,7 +75,7 @@ function tween:play(reverse)
                 alpha = 1 - styles[self.style](-self.delta + 1)
             end
 
-            for property, value in self.properties do
+            for property: string, value: any in self.properties do
                 if typeof(value) == "number" then
                     self.object[property] = self.starts[property] + ((value - self.starts[property]) * alpha)
                 else 
@@ -80,9 +84,9 @@ function tween:play(reverse)
             end
         end
 
-        if not self.cancelled and (if reverse then true else not self.reversed) then
-            for property, value in self.properties do
-                self.object[property] = if reverse then self.starts[property] else value
+        if not self.cancelled and (if _REVERSE then true else not self.reversed) then
+            for property: string, value: any in self.properties do
+                self.object[property] = if _REVERSE then self.starts[property] else value
             end
         end
 
@@ -92,23 +96,23 @@ function tween:play(reverse)
     end)()
 end
 
-function tween:reverse()
+function tween:reverse(): ()
     self:play(true)
 end
 
-function tween:pause()
+function tween:pause(): ()
     self.paused = true
 end
 
-function tween:resume()
+function tween:resume(): ()
     self.paused = false
 end
 
-function tween:cancel()
+function tween:cancel(): ()
     self.cancelled = true
 end
 
-function tween:wait()
+function tween:wait(): ()
     repeat heartbeat:Wait() until self.elapsed >= self.time
 end
 
