@@ -5,6 +5,9 @@
     @class Drawing
 ]=]
 
+-- Service
+local TextService = game:GetService("TextService")
+
 -- Datatype aliases
 local rgb, v2, ud2o, ud, font = Color3.fromRGB, Vector2.new, UDim2.fromOffset, UDim.new, Font.new
 
@@ -144,7 +147,13 @@ end
 ]=]
 function Drawing:__index(index)
 	if index == "TextBounds" then
-		return self._instance.TextBounds
+		local params = Instance.new("GetTextBoundsParams")
+		params.Text = self.Text
+		params.Font = fonts[self.Font]
+		params.Size = self.Size - 1
+		params.Width = math.huge
+
+		return TextService:GetTextBoundsAsync(params)
 	end
 
 	return self._properties[index] or rawget(self, index) or rawget(Drawing, index)
