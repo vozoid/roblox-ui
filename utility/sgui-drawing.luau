@@ -5,7 +5,7 @@
     @class Drawing
 ]=]
 
--- Service
+-- Services
 local TextService = game:GetService("TextService")
 
 -- Datatype aliases
@@ -19,7 +19,7 @@ local fonts = {
 	font("rbxasset://fonts/families/Oswald.json"), -- SometypeMono https://github.com/vozoid/roblox-ui/blob/main/fonts/SometypeMono.ttf
 }
 
--- Instance bases
+-- Instance bases to clone
 local bases = {}
 
 bases.Square = Instance.new("Frame")
@@ -147,6 +147,7 @@ end
 ]=]
 function Drawing:__index(index)
 	if index == "TextBounds" then
+		-- Using TextService instead of instance.TextBounds due to issues with TextBounds not updating without visiblity
 		local params = Instance.new("GetTextBoundsParams")
 		params.Text = self.Text
 		params.Font = fonts[self.Font]
@@ -170,6 +171,7 @@ function Drawing:__newindex(index, value)
 			
 			self._instance.stroke.Transparency = 1 - value
 		else
+			-- Gives class context
 			self._instance[self._class .. index] = 1 - value
 		end
 	elseif index == "Color" then
