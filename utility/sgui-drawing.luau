@@ -13,10 +13,10 @@ local rgb, v2, ud2o, ud, font = Color3.fromRGB, Vector2.new, UDim2.fromOffset, U
 
 -- Fonts (replace Studio fonts with the corresponding fonts) (if you know you know >:)
 local fonts = {
-	font("rbxasset://fonts/families/Jura.json"), -- SegoeUI
-	font("rbxasset://fonts/families/Sarpanch.json"), -- ProggyClean
-	font("rbxasset://fonts/families/Kalam.json"), -- IBMPlex
-	font("rbxasset://fonts/families/Oswald.json"), -- SometypeMono
+	font("rbxasset://fonts/families/Jura.json"), -- SegoeUI https://github.com/vozoid/roblox-ui/blob/main/fonts/SegoeUI.ttf
+	font("rbxasset://fonts/families/Sarpanch.json"), -- ProggyClean https://github.com/vozoid/roblox-ui/blob/main/fonts/ProggyClean.ttf
+	font("rbxasset://fonts/families/Kalam.json"), -- IBMPlex https://github.com/vozoid/roblox-ui/blob/main/fonts/IBMPlex.ttf
+	font("rbxasset://fonts/families/Oswald.json"), -- SometypeMono https://github.com/vozoid/roblox-ui/blob/main/fonts/SometypeMono.ttf
 }
 
 -- Instance bases
