@@ -88,9 +88,9 @@ local function replaceVersionFonts(versionPath)
 			print(`Copied {weight} to content/fonts/{weight}`)
 		end
 
-		stdio.write(stdio.color("red"))
-
 		fs.writeFile(`{versionPath}/content/fonts/families/{family}.json`, serde.encode("json", newFamily, true))
+
+		stdio.write(stdio.color("red"))
 		print(`Replaced content/fonts/families/{family}.json with new {font} family\n`)
 	end
 end
