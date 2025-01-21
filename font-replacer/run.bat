@@ -1,3 +1,3 @@
 @echo off
-lune run "./init.luau" %USERPROFILE%
+lune run init %USERPROFILE%
 pause
