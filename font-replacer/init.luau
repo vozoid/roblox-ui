@@ -101,7 +101,5 @@ local latestStudioVersion = findCurrentStudioVersion(VERSIONS_PATH)
 replaceVersionFonts(latestStudioVersion)
 
 stdio.write(stdio.color("green"))
-
 print("\nFinished replacing fonts\n\n")
-
 stdio.write(stdio.color("reset"))
