@@ -14,4 +14,4 @@ and the line
 
 with
 
-```local VERSIONS_PATH = "/home/haroon/.var/app/org.vinegarhq.Vinegar/data/vinegar/versions"```
+```local VERSIONS_PATH = "/home/(YOUR USERNAME HERE)/.var/app/org.vinegarhq.Vinegar/data/vinegar/versions"```
