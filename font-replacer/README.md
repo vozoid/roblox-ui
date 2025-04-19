@@ -15,3 +15,5 @@ and the line
 with
 
 ```local VERSIONS_PATH = "/home/(YOUR USERNAME HERE)/.var/app/org.vinegarhq.Vinegar/data/vinegar/versions"```
+
+and run it with lune run . in the cli (or make your own bash script if youre fancy like that)
